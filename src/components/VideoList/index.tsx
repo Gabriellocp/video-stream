@@ -1,6 +1,7 @@
 "use client";
+import PlayButtonSVG from "@/assets/icons/play-button.svg";
 import { useVideoContext } from "@/providers/VideoProvider";
-
+import Image from "next/image";
 export function VideoList() {
   const { videos, play, current } = useVideoContext();
   return (
@@ -15,7 +16,7 @@ export function VideoList() {
         backgroundColor: "#fff",
       }}
     >
-      {videos.map((x: string) => (
+      {videos.map((x: string, index: number) => (
         <div
           style={{
             fontSize: 16,
@@ -25,12 +26,14 @@ export function VideoList() {
             padding: 16,
             display: "flex",
             gap: 8,
+            alignItems: "center",
+            borderTop: index > 0 ? "1px solid #666" : "",
           }}
           key={x}
           onClick={() => play(x)}
         >
+          {current === x && <Image src={PlayButtonSVG} alt="" />}
           {x}
-          <span style={{ color: "green" }}>{current === x && "Playing"}</span>
         </div>
       ))}
     </div>
