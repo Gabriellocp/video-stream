@@ -45,9 +45,6 @@ export function VideoUploader() {
           display: "flex",
           gap: 8,
           alignItems: "center",
-          backgroundColor: "#fff",
-          padding: 24,
-          borderRadius: 8,
         }}
       >
         <Button
@@ -60,14 +57,19 @@ export function VideoUploader() {
         {selectedFile && (
           <strong
             style={{
-              color: "#666",
+              color: "#fff",
               display: "flex",
               alignItems: "center",
               gap: 4,
             }}
           >
             {selectedFile.name}
-            <span onClick={handleRemove}>X</span>
+            <span
+              style={{ color: "red", cursor: "pointer" }}
+              onClick={handleRemove}
+            >
+              X
+            </span>
           </strong>
         )}
       </div>

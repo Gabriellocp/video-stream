@@ -1,15 +1,28 @@
 "use client";
-import { VideoUploader } from "@/components/VideoUploader";
-import { useVideoContext } from "@/providers/VideoProvider";
-import { useState } from "react";
+import { Card } from "@/components/Card";
+import { useHeaderChange } from "@/hooks/useHeaderChange";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 export default function Home() {
-  const [file, setFile] = useState<File | undefined>(undefined);
-  const { current, addVideo } = useVideoContext();
+  useHeaderChange("Memory keeper");
+  const router = useRouter();
+  const handleNavigate = (path: string) => {
+    router.push(path);
+  };
   return (
     <div className={styles.page}>
-      <VideoUploader />
-      {current && <video controls src={`/api/download/${current}`}></video>}
+      <div style={{ display: "flex", gap: 16 }}>
+        <Card
+          title="New video"
+          description="Add a new memory to watch later"
+          onClick={() => handleNavigate("/upload")}
+        />
+        <Card
+          title="My videos"
+          description="Remember one of your favourite moments here!"
+          onClick={() => handleNavigate("/videos")}
+        />
+      </div>
     </div>
   );
 }

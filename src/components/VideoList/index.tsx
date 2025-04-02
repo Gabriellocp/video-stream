@@ -8,11 +8,10 @@ export function VideoList() {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
         borderRadius: 8,
         border: "2px solid transparent",
         overflow: "hidden",
-        minWidth: "160px",
+        width: "300px",
         backgroundColor: "#fff",
       }}
     >

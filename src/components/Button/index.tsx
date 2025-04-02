@@ -13,11 +13,11 @@ export function Button({ children, ...props }: IButtonProps) {
     <button
       {...props}
       style={{
-        border: "1.5px solid #fff",
+        border: "none",
         borderRadius: 4,
         padding: 16,
-        backgroundColor: "#ccc",
-        color: "black",
+        backgroundColor: "#fff",
+        color: "#666",
         fontWeight: "bold",
         fontSize: "18px",
       }}
