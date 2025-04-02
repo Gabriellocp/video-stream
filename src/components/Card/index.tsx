@@ -16,11 +16,11 @@ export function Card({
       style={{
         padding: 24,
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
         backgroundColor: "#fff",
         borderRadius: 8,
+        gap: 16,
         width: 320,
+        alignItems: "flex-start",
         cursor: "pointer",
       }}
       onClick={onClick}
