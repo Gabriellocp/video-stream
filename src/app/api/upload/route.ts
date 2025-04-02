@@ -7,11 +7,14 @@ export async function POST(
 ) {
     const form = await req.formData()
     const file = form.get('file')
-    console.log(file)
     if (!file) {
         return NextResponse.json({ error: 'File not provided' })
     }
     const fileToWrite = file as File
+    const existFileWithSameName = fs.existsSync(path.join(process.cwd(), 'uploads', fileToWrite.name));
+    if (existFileWithSameName) {
+        return NextResponse.json({ error: 'File already exist' }, { status: 400 });
+    }
     const buffer = Buffer.from(await fileToWrite.arrayBuffer())
     if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath)
