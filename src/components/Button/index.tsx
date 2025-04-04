@@ -20,6 +20,7 @@ export function Button({ children, ...props }: IButtonProps) {
         color: "#666",
         fontWeight: "bold",
         fontSize: "18px",
+        cursor: "pointer",
       }}
     >
       {children}

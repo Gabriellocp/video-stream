@@ -22,6 +22,7 @@ export function Card({
         width: 320,
         alignItems: "flex-start",
         cursor: "pointer",
+        height: "fit-content",
       }}
       onClick={onClick}
     >

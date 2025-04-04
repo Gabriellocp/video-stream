@@ -1,10 +1,9 @@
 "use client";
 import { VideoList } from "@/components/VideoList";
+import { VideoWrapper } from "@/components/VideoWrapper";
 import { useHeaderChange } from "@/hooks/useHeaderChange";
-import { useVideoContext } from "@/providers/VideoProvider";
 
 export default function Video() {
-  const { current } = useVideoContext();
   useHeaderChange("My videos", "/");
   return (
     <div
@@ -15,7 +14,7 @@ export default function Video() {
       }}
     >
       <VideoList />
-      {current && <video controls src={`/api/download/${current}`}></video>}
+      <VideoWrapper />
     </div>
   );
 }

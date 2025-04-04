@@ -1,12 +1,14 @@
 "use client";
-import { useVideoContext } from "@/providers/VideoProvider";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Button } from "../Button";
 
-export function VideoUploader() {
+export function FilePicker({
+  onChange,
+}: {
+  onChange: (file: File | undefined) => void;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
-  const { addVideo } = useVideoContext();
   const handleSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
@@ -14,23 +16,13 @@ export function VideoUploader() {
     }
     setSelectedFile(file);
   };
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      return;
-    }
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    fetch("/api/upload", { method: "POST", body: formData }).then(
-      (response) => {
-        if (response.ok) {
-          addVideo(selectedFile.name);
-        }
-      }
-    );
-  };
+
   const handleRemove = () => {
     setSelectedFile(undefined);
   };
+  useEffect(() => {
+    onChange(selectedFile);
+  }, [selectedFile]);
   return (
     <>
       <input
@@ -40,39 +32,29 @@ export function VideoUploader() {
         type="file"
         accept="video/*"
       />
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          alignItems: "center",
-        }}
-      >
-        <Button
-          onClick={
-            !selectedFile ? () => inputRef.current?.click() : handleUpload
-          }
+
+      {!selectedFile && (
+        <Button onClick={() => inputRef.current?.click()}>Select file</Button>
+      )}
+      {selectedFile && (
+        <strong
+          style={{
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            fontSize: 16,
+          }}
         >
-          {!!selectedFile ? "Enviar" : "Selecionar arquivo"}
-        </Button>
-        {selectedFile && (
-          <strong
-            style={{
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
-            }}
+          {selectedFile.name}
+          <span
+            style={{ color: "red", cursor: "pointer" }}
+            onClick={handleRemove}
           >
-            {selectedFile.name}
-            <span
-              style={{ color: "red", cursor: "pointer" }}
-              onClick={handleRemove}
-            >
-              X
-            </span>
-          </strong>
-        )}
-      </div>
+            X
+          </span>
+        </strong>
+      )}
     </>
   );
 }

@@ -30,13 +30,21 @@ export default function RootLayout({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 24,
             height: "100vh",
-            paddingBottom: 24,
+            overflow: "hidden",
           }}
         >
           <Header />
-          <VideoProvider>{children}</VideoProvider>
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              padding: 8,
+              maxHeight: "calc(100% - 80px)",
+            }}
+          >
+            <VideoProvider>{children}</VideoProvider>
+          </div>
         </div>
       </body>
     </html>

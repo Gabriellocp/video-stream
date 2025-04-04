@@ -13,8 +13,8 @@ export async function POST(
         await connectDb()
         const form = await req.formData()
         const file = form.get('file')
-        const name = form.get('name') ?? 'nome'
-        const description = form.get('description') ?? 'desc'
+        const name = form.get('name')
+        const description = form.get('description')
 
         if (!file || !name || !description) {
             return NextResponse.json({ error: 'Provide all fields' }, { status: 400 })
