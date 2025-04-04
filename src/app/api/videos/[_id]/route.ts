@@ -1,10 +1,19 @@
-import fs from "fs";
+import connectDb, { videoBucket } from "@/lib/mongodb";
+import mongoose, { isValidObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-export async function GET(req: NextRequest, { params }: { params: Promise<{ name: string }> }) {
-    const video = path.join(process.cwd(), 'uploads', (await params).name)
+
+export async function GET(req: NextRequest, { params }: { params: Promise<{ _id: mongoose.Types.ObjectId }> }) {
+    await connectDb()
+    // const video = path.join(process.cwd(), 'uploads', (await params)._id)
+    const video = await videoBucket.find({ _id: new mongoose.mongo.ObjectId((await params)._id) }).toArray()
+    console.log(isValidObjectId((await params)._id))
+    if (video.length === 0) {
+        return NextResponse.json({ error: 'Video not found' }, { status: 404 })
+    }
     const chunk = (1024 * 1024) * 10
-    const total = fs.statSync(video).size - 1
+    // const total = fs.statSync(video).size - 1
+    console.log(video)
+    const total = video[0].length - 1
     const [prevStart, prevEnd] = req.headers.get('range')
         ?.replace('bytes=', '')
         ?.split('/')[0]
@@ -22,7 +31,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ name
     console.log(start, end)
     const file = new ReadableStream({
         start(controller) {
-            const stream = fs.createReadStream(video, { start, end })
+            // const stream = fs.createReadStream(video, { start, end })
+            const stream = videoBucket.openDownloadStream(video[0]._id, { start, end })
             stream.on('data', (chunk) => controller.enqueue(chunk))
             stream.on('end', () => controller.close())
         },
