@@ -25,7 +25,7 @@ export default function Video() {
           placeContent: "center",
         }}
       >
-        <h1>Oops... It looks like you haven't add any videos yet.</h1>
+        <h1>Oops... It looks like you haven't added any videos yet.</h1>
         <Button onClick={handleAddVideo}>New video</Button>
       </div>
     );
