@@ -5,13 +5,15 @@ interface IButtonProps
     ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
   > {
+  loading?: boolean;
   children: ReactNode;
 }
 
-export function Button({ children, ...props }: IButtonProps) {
+export function Button({ loading, children, ...props }: IButtonProps) {
   return (
     <button
       {...props}
+      disabled={loading ?? props.disabled}
       style={{
         border: "none",
         borderRadius: 4,
@@ -20,10 +22,10 @@ export function Button({ children, ...props }: IButtonProps) {
         color: "#666",
         fontWeight: "bold",
         fontSize: "18px",
-        cursor: "pointer",
+        cursor: loading ? "not-allowed" : "pointer",
       }}
     >
-      {children}
+      {loading ? "..." : children}
     </button>
   );
 }
