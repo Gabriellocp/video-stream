@@ -13,6 +13,11 @@ export default function Upload() {
     description: "",
     file: undefined,
   });
+  const [request, setRequest] = useState({
+    loading: false,
+    message: "",
+    progress: 0,
+  });
   const { addVideo } = useVideoContext();
 
   const handleChangeInput = (value: any, name: string) => {
@@ -29,13 +34,44 @@ export default function Upload() {
     formData.append("description", fields.description);
     formData.append("name", fields.name);
     formData.append("file", fields.file!);
-    fetch("/api/upload", { method: "POST", body: formData }).then(
-      async (response) => {
-        if (response.ok) {
-          addVideo((await response.json()).data);
-        }
+    const xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener("loadstart", (ev) => {
+      setRequest((prev) => ({
+        ...prev,
+        loading: true,
+      }));
+    });
+    xhr.upload.addEventListener("progress", (ev) => {
+      const { total, loaded, lengthComputable } = ev;
+      if (lengthComputable) {
+        const finishedUpload = loaded === total;
+
+        setRequest((prev) => ({
+          ...prev,
+          message: finishedUpload ? "Saving video" : "Uploading...",
+          progress: (loaded / total) * 100,
+        }));
       }
-    );
+    });
+    xhr.open("POST", "/api/upload", true);
+
+    xhr.send(formData);
+    xhr.addEventListener("load", () => {
+      console.log(xhr.response);
+      addVideo(JSON.parse(xhr.response).data);
+      setRequest({
+        loading: false,
+        message: "",
+        progress: 0,
+      });
+    });
+    // fetch("/api/upload", { method: "POST", body: formData }).then(
+    //   async (response) => {
+    //     if (response.ok) {
+    //       addVideo((await response.json()).data);
+    //     }
+    //   }
+    // );
   };
   const isValidForm = useMemo(() => {
     return Object.values(fields).every((x) => !!x);
@@ -61,8 +97,18 @@ export default function Upload() {
         name="description"
         value={fields.description}
       />
+      {request.loading && (
+        <p style={{ textAlign: "center", fontWeight: "bold" }}>
+          {request.message} <br />
+          Upload progress: {request.progress.toFixed(2)}%
+        </p>
+      )}
       <FilePicker onChange={(file) => handleChangeInput(file, "file")} />
-      {isValidForm && <Button onClick={handleUpload}> Upload</Button>}
+      {isValidForm && (
+        <Button loading={request.loading} onClick={handleUpload}>
+          Upload
+        </Button>
+      )}
     </div>
   );
 }
