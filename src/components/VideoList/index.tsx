@@ -12,7 +12,7 @@ export function VideoList() {
         flexDirection: "column",
         borderRadius: 8,
         border: "2px solid transparent",
-        overflow: "hidden",
+        overflowY: "scroll",
         width: "300px",
         backgroundColor: "#fff",
       }}
