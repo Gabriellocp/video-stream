@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { VideoProvider } from "@/providers/VideoProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <ToastContainer position="bottom-center"></ToastContainer>
         <div
           style={{
             display: "flex",

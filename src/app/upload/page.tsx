@@ -4,7 +4,9 @@ import { Input } from "@/components/Input";
 import { FilePicker } from "@/components/VideoUploader";
 import { useHeaderChange } from "@/hooks/useHeaderChange";
 import { useVideoContext } from "@/providers/VideoProvider";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function Upload() {
   useHeaderChange("New video", "/");
@@ -19,7 +21,7 @@ export default function Upload() {
     progress: 0,
   });
   const { addVideo } = useVideoContext();
-
+  const router = useRouter();
   const handleChangeInput = (value: any, name: string) => {
     setFields((prev) => ({
       ...prev,
@@ -30,6 +32,10 @@ export default function Upload() {
     if (!isValidForm) {
       return;
     }
+    const toastId = toast(`Starting upload`, {
+      autoClose: false,
+      closeButton: false,
+    });
     const formData = new FormData();
     formData.append("description", fields.description);
     formData.append("name", fields.name);
@@ -45,20 +51,42 @@ export default function Upload() {
       const { total, loaded, lengthComputable } = ev;
       if (lengthComputable) {
         const finishedUpload = loaded === total;
-
+        const percent = loaded / total;
+        toast.update(toastId, {
+          render: `Progress - ${(percent * 100).toFixed(2)}%`,
+          type: "info",
+          progress: finishedUpload ? 0.99 : percent,
+        });
         setRequest((prev) => ({
           ...prev,
           message: finishedUpload ? "Saving video" : "Uploading...",
-          progress: (loaded / total) * 100,
+          progress: percent * 100,
         }));
       }
     });
     xhr.open("POST", "/api/upload", true);
 
     xhr.send(formData);
+    xhr.addEventListener("error", () => {
+      toast.update(toastId, {
+        render: "Failed to upload, try again",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        progress: null,
+      });
+    });
     xhr.addEventListener("load", () => {
-      console.log(xhr.response);
+      toast.update(toastId, {
+        render: "Video uploaded successfully",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+        progress: null,
+      });
       addVideo(JSON.parse(xhr.response).data);
+      router.push("/videos");
+
       setRequest({
         loading: false,
         message: "",
@@ -97,17 +125,17 @@ export default function Upload() {
         name="description"
         value={fields.description}
       />
-      {request.loading && (
-        <p style={{ textAlign: "center", fontWeight: "bold" }}>
-          {request.message} <br />
-          Upload progress: {request.progress.toFixed(2)}%
-        </p>
-      )}
       <FilePicker onChange={(file) => handleChangeInput(file, "file")} />
       {isValidForm && (
         <Button loading={request.loading} onClick={handleUpload}>
           Upload
         </Button>
+      )}
+      {request.loading && (
+        <p style={{ textAlign: "center", fontWeight: "bold" }}>
+          {request.message} <br />
+          {/* Upload progress: {request.progress.toFixed(2)}% */}
+        </p>
       )}
     </div>
   );
